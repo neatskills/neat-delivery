@@ -61,6 +61,7 @@ Each skill operates with a specific role persona that guides its behavior and ou
 | **neat-delivery-audit** | QA engineer who verifies cross-feature integration, coordination, and consistency |
 | **neat-delivery-adr** | Software architect who documents architectural decisions in MADR format |
 | **neat-delivery-changes** | Project manager who distills complex git history into clear, audience-appropriate change notes |
+| **neat-delivery-debugging** | Software engineer who diagnoses and fixes bugs through ranked hypothesis testing and rapid iteration in isolated worktrees |
 
 ### Shape Phase (requirements → feature docs)
 
@@ -114,6 +115,7 @@ Independent utility skills that can be called standalone or as part of other wor
 | `neat-delivery-gate` | Independent AI review against feature doc acceptance criteria | Called by `neat-delivery-build` to verify design/plan/code |
 | `neat-delivery-audit` | Final cross-feature verification after multiple features implemented | Run after 2+ features with relationships to verify integration, coordination, consistency |
 | `neat-delivery-changes` | Generate audience-appropriate change notes from git commit history | Standalone for release notes, changelogs |
+| `neat-delivery-debugging` | AI-powered debugging with ranked hypotheses, worktree isolation, and mandatory user alignment before code changes | Standalone for any bug, error, test failure, or unexpected behavior |
 
 ## Install / Uninstall
 
