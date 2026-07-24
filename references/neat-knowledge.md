@@ -1,6 +1,6 @@
 # Automatic Knowledge Management
 
-When neat-knowledge skills are installed, neat-sdd automatically manages the project knowledge base.
+When neat-knowledge skills are installed, neat-delivery automatically manages the project knowledge base.
 
 ## Skill Installation Check
 
@@ -70,10 +70,10 @@ cat <kb-path>/.index/index.json | grep -c '"file_path"'
 
 | Skill | Trigger | Path | Category | Notes |
 |-------|---------|------|----------|-------|
-| **neat-sdd-analysis** | After saving analysis + specs | `analysis-<product>.md` | analysis | Detects KB, writes path to specs.md |
-| **neat-sdd-domains** | After domain investigation | `domain-knowledge-{NN}-{name}.md` | domains | Reads KB path from specs.md |
-| **neat-sdd-adr** | After ADR creation | `docs/specs/<product>/adrs/` (directory) | adrs | |
-| **neat-sdd-build** | Feature `state: implemented` | `feature-{goal}-{nn}-{slug}.md` | features | Only implemented features ingested |
+| **neat-delivery-analysis** | After saving analysis + specs | `analysis-<product>.md` | analysis | Detects KB, writes path to specs.md |
+| **neat-delivery-domains** | After domain investigation | `domain-knowledge-{NN}-{name}.md` | domains | Reads KB path from specs.md |
+| **neat-delivery-adr** | After ADR creation | `docs/specs/<product>/adrs/` (directory) | adrs | |
+| **neat-delivery-build** | Feature `state: implemented` | `feature-{goal}-{nn}-{slug}.md` | features | Only implemented features ingested |
 
 ### Standard Workflow
 
@@ -96,7 +96,7 @@ cat <kb-path>/.index/index.json | grep -c '"file_path"'
 ## Benefits & Fallback
 
 **With KB:** Searchable analysis/domains/ADRs, 80-90% context savings in downstream skills.  
-**Without KB:** neat-sdd reads files directly, no optimization. Can install/ingest later.
+**Without KB:** neat-delivery reads files directly, no optimization. Can install/ingest later.
 
 ## Implementation Pattern
 
@@ -116,20 +116,20 @@ All content-generating skills follow this pattern:
 
 **Ingestion fails:** Log warning, continue. File already saved/registered in specs.md. User can ingest manually later.
 
-**Skills not installed:** Silent skip. neat-sdd operates independently.
+**Skills not installed:** Silent skip. neat-delivery operates independently.
 
 ### User Experience
 
 **With neat-knowledge installed:**
 
 - User runs `/neat-knowledge-ingest <any-file>` once to initialize KB
-- All subsequent neat-sdd operations auto-index content
+- All subsequent neat-delivery operations auto-index content
 - Transparent logging confirms operations
 - 80-90% context savings in downstream skills
 
 **Without neat-knowledge:**
 
-- neat-sdd reads files directly
+- neat-delivery reads files directly
 - No KB optimization
 - Can install neat-knowledge later and manually ingest existing content
 - No failures or blockers

@@ -1,6 +1,6 @@
 # Output Conventions
 
-Standards for writing and registering skill outputs in neat-sdd.
+Standards for writing and registering skill outputs in neat-delivery.
 
 ## Path Construction
 

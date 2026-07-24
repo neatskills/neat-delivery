@@ -1,29 +1,29 @@
 ---
-name: neat-sdd-audit
+name: neat-delivery-audit
 description: Use when multiple features are implemented and need cross-feature verification - checks dependency integration, blast area coordination, implementation gaps, and pattern consistency - requires implemented features
 ---
 
-# neat-sdd Cross-Feature Audit
+# neat-delivery Cross-Feature Audit
 
 **Role:** You are a QA engineer who verifies cross-feature integration, coordination, and consistency after implementation.
 
-**Usage:** `neat-sdd-audit <product>` or `neat-sdd-audit` (will prompt for product)
+**Usage:** `neat-delivery-audit <product>` or `neat-delivery-audit` (will prompt for product)
 
 **Requires:** Multiple features with `state: implemented` in `docs/specs/<product>/features/`
 
-**Not for:** Single feature verification (use `neat-sdd-gate`), pre-implementation planning (use `neat-sdd-planning`)
+**Not for:** Single feature verification (use `neat-delivery-gate`), pre-implementation planning (use `neat-delivery-planning`)
 
 ## Overview
 
 Cross-feature integration verification: dependency integration, blast area coordination, implementation gaps, pattern consistency. Severity-ranked findings (ERROR/WARNING/INFO).
 
-**Scope:** Single feature → `neat-sdd-gate`; Multi-feature → `neat-sdd-audit`
+**Scope:** Single feature → `neat-delivery-gate`; Multi-feature → `neat-delivery-audit`
 
 ## When to Use
 
 After implementation when: features have `depends_on`, overlapping blast areas, batch completes, before milestones.
 
-**Not for:** Single feature (`neat-sdd-gate`), pre-implementation (`neat-sdd-planning`).
+**Not for:** Single feature (`neat-delivery-gate`), pre-implementation (`neat-delivery-planning`).
 
 ## Quick Reference
 
@@ -151,8 +151,8 @@ Present findings, ask: "Proceed? **Fix** | **Accept** | **Done**"
 
 | Finding Type | Recommended Action |
 |--------------|-------------------|
-| Dependency integration broken | Fix integration in dependent feature, re-run `neat-sdd-gate` |
-| Blast area conflict | Coordinate features - may need refactoring, re-run `neat-sdd-gate` for affected features |
+| Dependency integration broken | Fix integration in dependent feature, re-run `neat-delivery-gate` |
+| Blast area conflict | Coordinate features - may need refactoring, re-run `neat-delivery-gate` for affected features |
 | Implementation gap | Implement missing integration, update acceptance criteria verification |
 | Pattern inconsistency | Align patterns or document intentional divergence in Technical Decisions |
 
@@ -183,7 +183,7 @@ Stop rationalizing - run full checks:
 | Checking only docs/tests | Verify implementation integration in code |
 | Skipping code reading | Read implementations, don't infer from specs |
 | Running before implementation | Requires `state: implemented` |
-| Using for single feature | Use `neat-sdd-gate` instead |
+| Using for single feature | Use `neat-delivery-gate` instead |
 | Inferring from proximity | Verify imports/usage explicitly |
 
 ## KB Registration

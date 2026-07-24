@@ -1,5 +1,5 @@
 ---
-name: neat-sdd-gate
+name: neat-delivery-gate
 description: Use when verifying implementation alignment against feature specifications - independent AI review checks design specs, plans, or code against feature doc acceptance criteria - requires existing feature docs from planning
 ---
 
@@ -10,8 +10,8 @@ description: Use when verifying implementation alignment against feature specifi
 **Usage:**
 
 ```bash
-neat-sdd-gate <product>  # Auto-detects mode based on artifacts
-neat-sdd-gate            # Prompts for product if ambiguous
+neat-delivery-gate <product>  # Auto-detects mode based on artifacts
+neat-delivery-gate            # Prompts for product if ambiguous
 ```
 
 **Requires:**

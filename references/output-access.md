@@ -1,6 +1,6 @@
 # Accessing Outputs
 
-**neat-sdd works independently** - reads output files from docs/specs/ directly. Optional: Install [neat-knowledge](https://github.com/neatskills/neat-knowledge) for 80-90% context savings (see [auto KB pattern](neat-knowledge.md)).
+**neat-delivery works independently** - reads output files from docs/specs/ directly. Optional: Install [neat-knowledge](https://github.com/neatskills/neat-knowledge) for 80-90% context savings (see [auto KB pattern](neat-knowledge.md)).
 
 ## Core Principle
 

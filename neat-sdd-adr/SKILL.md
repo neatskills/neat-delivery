@@ -1,5 +1,5 @@
 ---
-name: neat-sdd-adr
+name: neat-delivery-adr
 description: Use when creating or extracting architectural decisions - standalone conversational mode or extraction from design specs - generates MADR format ADRs
 ---
 
@@ -9,8 +9,8 @@ description: Use when creating or extracting architectural decisions - standalon
 
 **Usage:**
 
-- Standalone: `neat-sdd-adr`
-- Extraction: `neat-sdd-adr <design-spec-path> <feature-doc-path> <mode>`
+- Standalone: `neat-delivery-adr`
+- Extraction: `neat-delivery-adr <design-spec-path> <feature-doc-path> <mode>`
 
 ## Overview
 
@@ -23,7 +23,7 @@ description: Use when creating or extracting architectural decisions - standalon
 | Mode | Use Cases |
 |------|-----------|
 | Standalone | Document without specs, record past decisions, explore trade-offs |
-| Extraction | neat-sdd-build integration, backfill from specs, design review |
+| Extraction | neat-delivery-build integration, backfill from specs, design review |
 
 ## Quick Reference
 
@@ -93,7 +93,7 @@ Write file. Update index.md (sort by date), specs.md. Auto-ingest per [auto KB p
 
 ## Extraction Mode
 
-Extract from `## Key Decisions` (H3 subsections). Input: `neat-sdd-adr <design-spec-path> <feature-doc-path> <mode>`. May yield zero ADRs (valid).
+Extract from `## Key Decisions` (H3 subsections). Input: `neat-delivery-adr <design-spec-path> <feature-doc-path> <mode>`. May yield zero ADRs (valid).
 
 ### Step 1: Parse & Filter
 

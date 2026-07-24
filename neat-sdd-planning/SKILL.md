@@ -1,5 +1,5 @@
 ---
-name: neat-sdd-planning
+name: neat-delivery-planning
 description: Use when user has a high-level goal or objective that needs to be broken down into discrete features for build
 ---
 
@@ -100,7 +100,7 @@ Examples: "Implement OAuth" → `auth`, "Real-time editing" → `realtime-collab
 
 **Update specs.md:** `- Features: docs/specs/<product>/features/ (8 features)` per [format](../references/output-conventions.md)
 
-**Recommend:** `neat-sdd-build` for design/implementation. Build derives acceptance criteria during design.
+**Recommend:** `neat-delivery-build` for design/implementation. Build derives acceptance criteria during design.
 
 ## Common Mistakes
 

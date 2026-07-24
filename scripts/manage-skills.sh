@@ -8,7 +8,7 @@ if [ "$mode" != "install" ] && [ "$mode" != "uninstall" ]; then
   exit 1
 fi
 
-SKILL_PREFIX="neat-sdd-"
+SKILL_PREFIX="neat-delivery-"
 root="$(cd "$(dirname "$0")/.." && pwd)"
 dst="$HOME/.claude/skills"
 

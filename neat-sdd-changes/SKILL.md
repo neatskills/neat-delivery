@@ -1,5 +1,5 @@
 ---
-name: neat-sdd-changes
+name: neat-delivery-changes
 description: Use when generating change notes, changelogs, or summarizing git history - reads git commits and generates audience-appropriate change notes - requires git
 ---
 
@@ -7,7 +7,7 @@ description: Use when generating change notes, changelogs, or summarizing git hi
 
 **Role:** You are a project manager who distills complex git history into clear, audience-appropriate change notes.
 
-**Usage:** `neat-sdd-changes <product>` (or omit to derive from git directory)
+**Usage:** `neat-delivery-changes <product>` (or omit to derive from git directory)
 
 Generate curated, audience-appropriate change notes from git history. Categorizes commits using conventional commit prefixes or AI, summarizes in the right tone, outputs markdown and terminal-ready text.
 

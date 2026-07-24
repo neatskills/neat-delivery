@@ -1,5 +1,5 @@
 ---
-name: neat-sdd-build
+name: neat-delivery-build
 description: Use when building a planned feature end-to-end - orchestrates design, planning, and implementation with spec gate verification - requires existing feature docs from planning
 ---
 
@@ -15,7 +15,7 @@ Orchestrates continuous parallel builds: readiness → brainstorming → ADR ext
 
 ## When to Use
 
-After `neat-sdd-planning` for end-to-end execution with verification. Implementation traces to feature doc.
+After `neat-delivery-planning` for end-to-end execution with verification. Implementation traces to feature doc.
 
 **Not for:** Standalone implementation (use superpowers)
 
@@ -77,7 +77,7 @@ Parse components → keywords → search → rank → confirm.
 
 ### Step 6: Extract ADRs
 
-Invoke `neat-sdd-adr {design-spec} {feature-doc} integrated`. Outcomes: SUCCESS → Step 7 | MINOR → auto-fix | MAJOR → re-brainstorm.
+Invoke `neat-delivery-adr {design-spec} {feature-doc} integrated`. Outcomes: SUCCESS → Step 7 | MINOR → auto-fix | MAJOR → re-brainstorm.
 
 ### Step 7: Writing Plans
 
@@ -89,7 +89,7 @@ Per [algorithm](references/dependency-analysis.md): Count tasks, build graph, id
 
 ### Step 9: Risk Assessment + Gate — Design + Plan
 
-Analyze complexity per [algorithm](references/risk-assessment.md#design-phase-assessment). Gate runs → ensure artifacts, invoke `neat-sdd-gate <product>` (auto-detects design).
+Analyze complexity per [algorithm](references/risk-assessment.md#design-phase-assessment). Gate runs → ensure artifacts, invoke `neat-delivery-gate <product>` (auto-detects design).
 
 ### Step 10: Spawn Agents
 
@@ -116,7 +116,7 @@ Wait for agents. Per completion:
 
 ### Step 12: Risk Assessment + Gate — Execute
 
-Analyze per [algorithm](references/risk-assessment.md#execute-phase-assessment). Gate → ensure artifacts, invoke `neat-sdd-gate <product>` (auto-detects execute).
+Analyze per [algorithm](references/risk-assessment.md#execute-phase-assessment). Gate → ensure artifacts, invoke `neat-delivery-gate <product>` (auto-detects execute).
 
 ### Step 13: Update Doc (CRITICAL - BLOCKING)
 
@@ -130,7 +130,7 @@ MUST complete before next spawn.
 
 ### Step 14: Audit Prompt
 
-2+ implemented AND (`depends_on` OR overlaps) → prompt "Run audit? Y/n". Y → invoke `neat-sdd-audit`.
+2+ implemented AND (`depends_on` OR overlaps) → prompt "Run audit? Y/n". Y → invoke `neat-delivery-audit`.
 
 ### Step 15: Completion
 
@@ -138,7 +138,7 @@ MUST complete before next spawn.
 
 ## Gate Handling
 
-Gates run if medium/high risk. Low-risk → skip, log. Issues → manually invoke `neat-sdd-gate <product>`.
+Gates run if medium/high risk. Low-risk → skip, log. Issues → manually invoke `neat-delivery-gate <product>`.
 
 **Failure:** "Fix plan | Fix design | Accept | Abort". Max 3. Wrong criteria → surface, update if approved, re-run.
 
@@ -156,5 +156,5 @@ docs/superpowers/
 docs/specs/<product>/
   adrs/adr-YYYYMMDD-<decision>.md, index.md
   features/feature-{goal}-{nn}-{slug}.md              # state: implemented, Status
-  features/feature-{goal}-{nn}-{slug}-gates.md        # by neat-sdd-gate
+  features/feature-{goal}-{nn}-{slug}-gates.md        # by neat-delivery-gate
 ```

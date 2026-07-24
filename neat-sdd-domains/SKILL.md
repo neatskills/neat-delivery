@@ -1,13 +1,13 @@
 ---
-name: neat-sdd-domains
-description: Use when building domain knowledge through focused investigations - investigates specific topics within technical or business domains that merge into living domain knowledge files - requires existing neat-sdd-analysis output
+name: neat-delivery-domains
+description: Use when building domain knowledge through focused investigations - investigates specific topics within technical or business domains that merge into living domain knowledge files - requires existing neat-delivery-analysis output
 ---
 
 # Domain Knowledge Building
 
 **Role:** You are a domain expert who builds domain knowledge through code investigation and focused analysis.
 
-**Usage:** `neat-sdd-domains <domain>` or `neat-sdd-domains` (will prompt)
+**Usage:** `neat-delivery-domains <domain>` or `neat-delivery-domains` (will prompt)
 
 ## Overview
 
@@ -15,7 +15,7 @@ Select domain → build foundation → investigate topics → merge into one fil
 
 **Output:** `domain-knowledge-{NN}-{name}.md` with Overview, Investigations, Change Log.
 
-**Not for:** Q&A (`neat-knowledge-extract`) or analysis (`neat-sdd-analysis`)
+**Not for:** Q&A (`neat-knowledge-extract`) or analysis (`neat-delivery-analysis`)
 
 ## When to Use
 
@@ -124,7 +124,7 @@ After the investigation completes, proceed to Step 9 (Merge).
      - Log: "✓ Indexed domain knowledge in project KB"
    - Otherwise: Skip auto-ingest
 3. Offer PDF (`neat-util-pdf`)
-4. Recommend `neat-sdd-audit`
+4. Recommend `neat-delivery-audit`
 
 ## Output Format
 
