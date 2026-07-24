@@ -152,7 +152,7 @@ The handover is the only artifact read — no assumptions about file location.
 ### Process
 
 1. Parse shared handover content
-2. Extract: project name, Architecture Pattern, Technology Decisions, Open Risks
+2. Extract: project name, Architecture Pattern, Technology Decisions, Requirements (MVP Core + Deferred), Open Risks
 3. Derive product name (slugify project name, max 20 chars)
 4. Check if `docs/specs/{product}/specs.md` already exists — warn if so, ask before overwriting
 5. Create specs.md from handover content (see Output below)
@@ -174,6 +174,20 @@ The handover is the only artifact read — no assumptions about file location.
 ## Architecture
 
 {Architecture Pattern table + Key Architecture Decisions from handover}
+
+## Requirements
+
+### MVP Core
+
+| # | Requirement | Type | Size |
+|---|-------------|------|------|
+| {REQ-001} | {description} | {AI / Traditional / Hybrid} | {S / M / L / XL} |
+
+### Deferred
+
+| # | Requirement | Reason for deferral |
+|---|-------------|---------------------|
+| {REQ-010} | {description} | {reason} |
 
 ## Conventions
 
