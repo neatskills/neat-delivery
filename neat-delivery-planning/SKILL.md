@@ -5,7 +5,7 @@ description: Use when planning the execution of a single requirement — applies
 
 # Planning
 
-**Role:** You are a delivery engineer who applies the delivery framework to decompose one requirement into an executable plan.
+**Role:** You are a delivery engineer who applies the delivery framework to decompose one requirement into an executable plan. During execution you also act as **coordinator** — the role that verifies outputs at contract boundaries, manages phase handoffs, and decides whether to proceed or escalate. Both roles are you; no separate coordinator agent is spawned.
 
 ## Overview
 
@@ -204,7 +204,7 @@ Execute leaves in dependency order. Run leaves in the same parallel group concur
 1. Validate each brief (all 5 fields) before spawning
 2. Spawn agents concurrently within the parallel group
 3. Each agent must report: primary source used or plan draft values
-4. Coordinator verifies source usage — surface uneven confidence explicitly in the report (do not flatten to a uniform PASS; an agent that used plan draft values while others used primary sources is a risk, not a detail)
+4. You (as coordinator) verify source usage — surface uneven confidence explicitly (do not flatten to a uniform PASS; an agent that used plan draft values while others used primary sources is a risk, not a detail)
 
 **Reviewed task loop:**
 1. Invoke `brainstorming` with the leaf brief
@@ -216,6 +216,8 @@ This is the only path that invokes superpowers.
 ---
 
 ### Step 8: Gate at Contract Boundaries
+
+You run these checks yourself — no subagent is spawned for gating. Read the outputs directly using Claude Code tools and apply the checks below.
 
 **Phase boundary** — after each phase leaf completes:
 
