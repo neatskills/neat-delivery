@@ -1,212 +1,265 @@
 ---
 name: neat-delivery-planning
-description: Use when decomposing a high-level goal into build-ready features; auto-imports requirements from specs.md if greenfield analysis was run first
+description: Use when planning the execution of a single requirement — applies the delivery framework to decompose it into an executable manifest and guide implementation
 ---
 
 # Planning
 
-**Role:** You are a product owner who clarifies ambiguous goals and decomposes them into discrete, build-ready features.
-
-**Core principle:** Clarify before decomposing. Detailed acceptance criteria derived during build's design phase.
+**Role:** You are a delivery engineer who applies the delivery framework to decompose one requirement into an executable plan.
 
 ## Overview
 
-Decomposes goals into build-ready features via KB-guided clarification, architecture validation, and automated requirements derivation.
+Takes one requirement, reads documentation to extract constraints and conventions, applies recursive decomposition (Feature vs Workflow at every node until every leaf is directly executable by one tool), produces a manifest, and drives execution.
+
+Codebase exploration is done natively with Claude Code tools as needed during decomposition. Documentation (architecture docs, design decisions, conventions) is the knowledge input.
 
 ## When to Use
 
-Goals need decomposition into build-ready features. Not for design or implementation.
+One requirement is ready to plan. One requirement per session.
 
-**Two entry modes (auto-detected from specs.md):**
-
-- **Discovery mode:** specs.md has a Requirements section (written by greenfield analysis) → import directly as feature candidates
-- **Goal mode:** specs.md has no Requirements section → clarify through questions → synthesise 5–15 features
+**Not for:** requirement selection, discovery, or goal clarification — those happen upstream.
 
 ## Quick Reference
 
 | Step | What |
 |------|------|
-| 1 | Load specs.md → detect mode: Requirements section present → discovery; absent → goal |
-| 2 | Query KB for context overview (structured index) |
-| 3 | **Goal:** generate questions → KB answers → ask user decisions / **Discovery:** present Requirements to user for confirmation |
-| 4 | **Goal:** synthesise 5–15 features / **Discovery:** use MVP Core as feature candidates; Deferred as out-of-scope |
-| 5 | Cross-check against architecture → identify components, type, risks |
-| 6 | Present features, iterate on feedback |
-| 7 | Per feature: derive goal statement, auto-detect dependencies, extract risks |
-| 8 | Save `feature-{goal}-{nn}-{slug}.md` with `state: planned`, update specs.md KB |
-
-## Setup
-
-1. Locate specs.md ([procedure](../references/specs-location.md))
-2. Construct output path ([rules](../references/output-conventions.md))
-3. Plan in KB? Ask "Update or fresh?"
+| 1 | Receive the requirement |
+| 2 | Ask for documentation (architecture, design, conventions) |
+| 3 | Extract global constraints and conventions from docs |
+| 4 | Recursive decomposition — Feature vs Workflow at every node |
+| 5 | Per leaf: select tool, write and validate brief |
+| 6 | Output manifest, get approval |
+| 7 | Execute in dependency order |
+| 8 | Gate at contract boundaries (structural + semantic) |
 
 ## Process
 
-1. Load specs.md → query KB → detect mode from Requirements section
-2. Clarify scope (mode-dependent — see Step 2)
-3. Synthesise or import features, cross-check architecture (mode-dependent — see Step 3)
-4. Present features with components/risks, iterate
-5. Per feature: derive goal, auto-detect dependencies, extract risks
-6. Save `features/<slug>.md`, update specs.md KB
+### Step 1: Receive Requirement
 
-### Step 1: Load Context
+Ask:
 
-Query KB per [pattern](../references/output-access.md):
+> "What is the requirement to plan?"
 
-```markdown
-Invoke: neat-knowledge-extract "What is tech stack, integrations, components, workflows, business logic?"
-```
-
-Agent evaluates matches, decides depth (summary/sections/full). Parse JSON: extract tech_stack, integrations, components, workflows, business_logic.
-
-Fails → fallback to direct reads, log "neat-knowledge not available, using direct reads"
-
-**Fallback:** Read specs.md, parse KB, read analysis.
-
-KB minimal → use goal only; factual → decision questions.
-
-**Mode check:** Does specs.md have a `## Requirements` section?
-- **Yes** → **discovery mode** — skip to Step 2 (discovery path)
-- **No** → **goal mode** — continue with Step 2 (goal path)
-
-### Step 2: Clarify (REQUIRED Before Step 3)
-
-**Goal mode:**
-
-**Generate:** 2-5 questions (scope, users, integration, constraints, priorities). Categorize: **Factual** (KB) or **Decision** (user).
-
-**Query KB factual:** Per [pattern](../references/output-access.md) with citations. Example: "Real-time support?" → "What workflows/patterns support real-time?" Agent loads analysis + domain knowledge, synthesizes.
-
-Fails → fallback, log "neat-knowledge not available, using direct reads"
-
-**Ask user:** Only decisions KB can't answer (priorities, permissions, strategy).
+Record it exactly as stated. This is the root node for decomposition — do not interpret or expand.
 
 ---
 
-**Discovery mode:**
+### Step 2: Ask for Documentation
 
-Read the `## Requirements` section from specs.md. Extract MVP Core and Deferred tables.
+Ask:
 
-Present to user:
+> "Is there documentation I should read before planning? This could include architecture design docs, technical decision records, convention guides, or any reference material relevant to this requirement. Share folder paths or individual file paths."
 
-> "I found requirements from your discovery handover in specs.md:
-> - **MVP Core ({N}):** [list requirements]
-> - **Deferred ({N}):** [will be marked out of scope]
+If provided:
+- Read the files
+- Extract: global constraints, conventions, architecture decisions, technical decisions
+
+If nothing provided: continue without documentation; note in manifest.
+
+---
+
+### Step 3: Extract and Confirm Planning Context
+
+From the documentation read in Step 2, consolidate:
+
+**Global constraints (implementation-affecting):** rules that affect HOW to implement — naming, structure, format, patterns. Goes into every agent brief.
+
+**Global constraints (post-hoc verifiable):** rules verifiable after the fact — counts, grep patterns, file structure checks. Goes to coordinator lens only.
+
+**Note:** a constraint can belong to both buckets. A naming convention an agent must apply AND that can be grep-verified afterward goes into agent briefs (to guide implementation) AND the coordinator lens (to catch violations).
+
+**Conventions:** naming patterns, file locations, code style.
+
+**Architecture / technical decisions:** committed choices that bound the implementation.
+
+Present to the user:
+
+> "Here is what I've extracted as planning context:
 >
-> Before I create feature files:
-> - Any MVP Core requirements to split or combine?
-> - Any scope changes since discovery?
-> - Any new requirements to add?"
+> **Global constraints (implementation-affecting):** [list or "none found"]
+> **Global constraints (post-hoc verifiable):** [list or "none found"]
+> **Conventions:** [list or "none found"]
+> **Architecture decisions:** [list or "none found"]
+>
+> Does anything need to be corrected or added before I decompose?"
 
-Adjust both lists based on feedback, then proceed to Step 3.
-
-### Step 3: Decompose & Cross-Check
-
-**Goal mode:**
-
-**Synthesize:** Functional capabilities (user-centric, independent, clear value). 5-15 features. Avoid layers/vague goals.
-
-**Cross-check:** Per feature: components (from KB), type (Incremental/Transformative), risks (blast radius, conflicts, ordering). Query KB for relationships/patterns.
+Wait for confirmation or corrections before proceeding.
 
 ---
 
-**Discovery mode:**
+### Step 4: Recursive Decomposition
 
-Use the confirmed MVP Core requirements from Step 2 as feature candidates — one requirement per feature. Do not re-decompose.
+Apply the delivery framework's decision flow. Start at the root node (the requirement). Explore the codebase as needed using Claude Code tools. Recurse until every leaf is directly executable.
 
-**Note deferred requirements:** List the Deferred requirements from the handover as explicitly out-of-scope at the bottom of the feature list.
+**Minimum structure principle:** decompose only as deep as the structure requires. Skip any Feature or Workflow layer that does not reflect real structure in the work. A single atomic action with no meaningful phases or independent subjects needs no decomposition at all.
 
-**Cross-check:** Same as goal mode — per feature: components (from KB), type, risks. Query KB if available.
+**At every node, ask two questions in order:**
 
-### Step 4: Present & Iterate
+**Q1 — Is this right-sized?**
 
-Show: Name, description, components, type, risks. Iterate until approved.
+Can this node be placed unambiguously in exactly one row of the tooling table? (See [tooling-selection.md](references/tooling-selection.md))
 
-### Step 5: Derive Requirements
+**Guard:** reviewed task loop is phase-level only. If the node spans multiple phases or multiple independent subjects, answer No regardless of whether you could assign it to reviewed task loop — decompose further first.
 
-Per approved feature:
+- Yes → leaf. Proceed to Step 5 for this node.
+- No → Q2.
 
-**Goal:** One-sentence outcome. Pattern: "Users can {action} via {mechanism}" or "{System} enables {capability}".
+**Q2 — What varies?**
 
-**Dependencies:** Parse components from all features. Per feature: Query KB "What infrastructure does {component} require?" → cross-reference features → create depends_on list.
+| What varies | Decomposition | Define |
+|-------------|---------------|--------|
+| The subject — same type of work on N different things | Feature split (parallelize across subjects) | Feature contracts: `produces` / `consumes` declared per Feature, specifying dependencies on other Features |
+| The type of work — N phases on one subject | Workflow split (sequence phases) | Phase contracts: `input` / `output` per phase |
 
-**Risks:** Query "What are known risks for {components}?" Extract from analysis. None → "None identified from KB."
+Recurse on each resulting node from the top.
 
-### Step 6: Save & Update
+**Common compositions:**
 
-**Goal identifier:** 1-3 key terms (lowercase, hyphens, max 20 chars).
+| Pattern | Structure |
+|---------|-----------|
+| One subject, multiple phases | Workflow only |
+| N independent subjects, each with phases | Feature outer → Workflow inner |
+| One workflow, N parallel items within a phase | Workflow outer → Feature inner |
+| Single atomic action | Direct (no decomposition) |
 
-Examples: "Implement OAuth" → `auth`, "Real-time editing" → `realtime-collab`, "API v2 GraphQL" → `api-v2`, "Migrate microservices" → `microservices`
+**Mixed work:** Default to Workflow outer (phases). Apply Feature decomposition within a phase when multiple items of the same type are independent.
 
-**Save:** `docs/specs/<product>/features/feature-{goal}-{nn}-{slug}.md` (two-digit numbers, scoped per goal).
+**At every node, also:**
+- Define contracts (Feature: `produces`/`consumes`; Phase: `input`/`output`)
+- Identify which nodes have no contract dependency → those can run in parallel
+- Place quality gates at boundaries
 
-**Update specs.md:** `- Features: docs/specs/<product>/features/ (8 features)` per [format](../references/output-conventions.md)
+**Phase handoff mechanism:** when defining a Workflow's phase contracts, also define the physical mechanism for passing output to the next phase — file artifact, structured summary, or coordinator-injected context. Declare it in the manifest before execution begins.
 
-**Recommend:** `neat-delivery-build` for design/implementation. Build derives acceptance criteria during design.
+---
+
+### Step 5: Per Leaf — Select Tool and Write Brief
+
+For each leaf node:
+
+**1. Select tool** using [tooling-selection.md](references/tooling-selection.md):
+
+| Situation | Tool |
+|-----------|------|
+| Single atomic action, ≤1 file, no state dependencies | Direct |
+| Sequential steps, ≤5 steps, bounded context | Inline |
+| N independent tasks (≤8), correctness fully specifiable upfront | Parallel agents |
+| Correctness of output cannot be fully specified upfront — requires judgment or review | Reviewed task loop |
+
+**2. Write brief** — all five fields required:
+
+| Field | Content |
+|-------|---------|
+| `scope` | Files/components this leaf will touch (explore codebase to confirm). For Inline leaves, also include a numbered step sequence (≤5 steps). |
+| `inputs` | What this leaf needs (from prior phase contract or Feature contract) |
+| `outputs` | What this leaf must produce |
+| `constraints` | Distilled from Step 3 — only constraints relevant to this leaf |
+| `primary_source` | The canonical reference to verify against (named doc or file). For all leaf types: used to anchor implementation. For parallel agents: also instruct the agent to report which source they actually used. |
+
+**3. For parallel agents:** add two explicit instructions to `constraints` in every brief:
+- Git scoping: "Scope all git operations to your assigned files — never use a catch-all add. Prefer worktree isolation if available."
+- Source reporting: "Report which source you used — name the primary source (doc or file), or state that you used plan draft values." Agents see their brief; if it is not in the brief, they will not report it.
+
+**4. Validate brief:** All 5 fields present and non-empty. File paths in `scope` must resolve to existing files, or be new files with declared intent. Do not spawn any agent before validation passes.
+
+**5. Set boundary type:** `phase` | `feature` | `none`
+
+---
+
+### Step 6: Output Manifest and Get Approval
+
+Write manifest to `docs/specs/<product>/decompositions/decomposition-{goal}-{nn}.md`
+
+See [manifest-format.md](references/manifest-format.md) for the full field spec.
+
+**Before presenting for approval, declare the recovery path for each Workflow in the manifest:**
+
+| Failure type | Default action |
+|-------------|----------------|
+| Structural gate failure | Retry the responsible leaf once with the specific finding |
+| Semantic gate failure | Targeted fix request, retry once |
+| Two consecutive failures | Escalate to user: retry / re-decompose / abort |
+
+If a specific Workflow needs a different escalation path, override it in the manifest. Define this before execution — not when a gate fails.
+
+Present to the user:
+
+> "Decomposition complete: [N leaves, tool breakdown].
+> [Leaf list with tool, dependencies, boundary per leaf]
+> Shall I proceed with execution?"
+
+Do not execute until the user approves.
+
+---
+
+### Step 7: Execute in Dependency Order
+
+Execute leaves in dependency order. Run leaves in the same parallel group concurrently.
+
+**Direct:** Execute inline. No agents, no planning overhead.
+
+**Inline:** Execute sequentially inline following the numbered step sequence in the brief's `scope`.
+
+**Parallel agents:**
+1. Validate each brief (all 5 fields) before spawning
+2. Spawn agents concurrently within the parallel group
+3. Each agent must report: primary source used or plan draft values
+4. Coordinator verifies source usage — surface uneven confidence explicitly in the report (do not flatten to a uniform PASS; an agent that used plan draft values while others used primary sources is a risk, not a detail)
+
+**Reviewed task loop:**
+1. Invoke `brainstorming` with the leaf brief
+2. Invoke `writing-plans` with the brainstorming output
+3. Execute via `subagent-driven-development` or `executing-plans`
+
+This is the only path that invokes superpowers.
+
+---
+
+### Step 8: Gate at Contract Boundaries
+
+**Phase boundary** — after each phase leaf completes:
+
+Both layers required — structural alone is not sufficient:
+
+1. **Structural:** grep / counts / file existence checks against declared `outputs`
+2. **Semantic:** whole-diff read scoped to leaf's declared `scope` — stale references, drift, anything structural misses
+
+**Failure recovery:**
+
+| Failure | Action |
+|---------|--------|
+| Structural | Retry the responsible leaf once with the specific finding |
+| Semantic | Targeted fix request, retry once |
+| Two consecutive failures | Escalate to user: retry / re-decompose leaf / abort |
+
+**Feature boundary** — after all phases of a Feature complete:
+
+Invoke `neat-delivery-gate` against Feature contracts (`produces` / `consumes`).
+
+**Cross-feature** — after 2+ Features with dependencies or overlapping scope:
+
+Invoke `neat-delivery-audit`.
+
+---
 
 ## Common Mistakes
 
 | Mistake | Fix |
 |---------|-----|
-| Skipping clarification | Always clarify before decomposing |
-| Asking factual questions | Query KB for facts, ask user for decisions |
-| Wrong granularity | 5-15 capabilities with user value |
-| Skipping architecture cross-check | Must identify components, type, risks |
-| Not deriving goal identifier | Derive from user's goal in Step 6 |
-| Skipping requirements derivation | Must derive goal statements, dependencies, risks in Step 5 |
-| Re-decomposing when specs.md has Requirements section | Discovery mode auto-detected — use Requirements from specs.md directly, skip synthesis |
+| Skipping documentation read | Step 2 before Step 4 — always |
+| Using "one subject" as right-sized test | Right-sized = fits one tooling row. One subject can still be too large. |
+| Checking tooling row fit after Feature/Workflow split | Q1 (right-sized?) before Q2 (what varies?) at every node |
+| Spawning before brief validation | Validate all 5 brief fields first — no exceptions |
+| Using superpowers for every leaf | Only reviewed task loop uses brainstorming + writing-plans |
+| Running semantic coordinator pass without structural | Both required; structural first |
+| Executing before manifest approval | Present manifest, wait for approval |
+| Assigning reviewed task loop to an entire requirement | Reviewed task loop is phase-level — decompose further first |
+| Parallel brief missing git scoping instruction | Every parallel brief must explicitly state: scope git ops to assigned files, never catch-all add |
+| Coordinator reports uniform PASS across parallel agents | Surface uneven confidence — an agent that used draft values is a risk, not a pass |
+| Recovery path left undefined until a gate fails | Declare it in the manifest before execution begins (Step 6) |
 
 ## Output
 
-Save to `docs/specs/<product>/features/feature-{goal}-{nn}-{slug}.md` per [output path rules](../references/output-conventions.md).
+`docs/specs/<product>/decompositions/decomposition-{goal}-{nn}.md`
 
-**Format:**
-
-```markdown
----
-name: Feature Name
-goal: goal-identifier
-state: planned
-created: YYYY-MM-DD
-depends_on: [feature-id-1, feature-id-2]  # If dependencies detected
----
-
-# Feature Name
-
-Brief 1-2 sentence description.
-
-## Goal
-
-One-sentence outcome statement derived from feature description.
-
-## Components Affected
-
-**Components affected:** component-a, component-b
-
-**Type:** Incremental | Transformative
-
-**Cross-repo format (if applicable):** `[repo-name] component-name`
-
-## Acceptance Criteria
-
-(Derived during design phase - see Build skill Step 5)
-
-## Risks
-
-[Risks extracted from KB, or "None identified from KB"]
-```
-
-**Naming:**
-
-- **Goal identifier:** 1-3 key terms from goal (lowercase, hyphens, max 20 chars)
-- **Number:** Scoped per goal (01, 02, etc.)
-- **Slug:** Feature name (lowercase, hyphens only, e.g., "Real-Time Editing!" → `realtime-editing`)
-
-**Terminology standard:**
-
-- **Section heading:** `## Components Affected` (always capitalized)
-- **Field label:** `**Components affected:**` (bold with colon)
-- **Inline reference:** "components" or "blast area" (lowercase)
-
-**Note:** Build skill adds `designed: YYYY-MM-DD` and `spec_doc: path` to frontmatter during Step 5.
+See [manifest-format.md](references/manifest-format.md).
