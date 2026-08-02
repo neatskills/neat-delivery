@@ -1,7 +1,9 @@
 ---
 name: neat-delivery-build
-description: Use when building a planned feature end-to-end - orchestrates design, planning, and implementation with spec gate verification - requires existing feature docs from planning
+description: Superseded by neat-delivery-planning, which handles decomposition and execution. This skill is no longer invoked.
 ---
+
+**Deprecated.** Use `neat-delivery-planning` instead — it handles requirement decomposition, tool selection, execution, and gating in a single skill.
 
 # Build
 
