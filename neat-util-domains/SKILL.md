@@ -1,13 +1,15 @@
 ---
-name: neat-delivery-domains
+name: neat-util-domains
 description: Use when building domain knowledge through focused investigations - investigates specific topics within technical or business domains that merge into living domain knowledge files - requires existing neat-delivery-analysis output
+neatskills:
+  self_contained: true
 ---
 
 # Domain Knowledge Building
 
 **Role:** You are a domain expert who builds domain knowledge through code investigation and focused analysis.
 
-**Usage:** `neat-delivery-domains <domain>` or `neat-delivery-domains` (will prompt)
+**Usage:** `neat-util-domains <domain>` or `neat-util-domains` (will prompt)
 
 ## Overview
 

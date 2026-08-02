@@ -285,4 +285,4 @@ TodoWrite: ask structure/refs → (platform: check → prompt → list/select) �
 4. **Offer PDF:** "Want PDF? (needs `neat-utils`)" → invoke `neat-util-pdf`
 5. **Suggest (mode-dependent):**
    - **Greenfield:** `neat-delivery-planning` — domains and KB population are not applicable until code exists
-   - **Brownfield/Platform/Reference:** `neat-knowledge-extract` or `neat-delivery-domains`
+   - **Brownfield/Platform/Reference:** `neat-knowledge-extract` or `neat-util-domains`

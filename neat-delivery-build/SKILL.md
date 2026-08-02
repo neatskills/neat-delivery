@@ -79,7 +79,7 @@ Parse components → keywords → search → rank → confirm.
 
 ### Step 6: Extract ADRs
 
-Invoke `neat-delivery-adr {design-spec} {feature-doc} integrated`. Outcomes: SUCCESS → Step 7 | MINOR → auto-fix | MAJOR → re-brainstorm.
+Invoke `neat-util-adr {design-spec} {feature-doc} integrated`. Outcomes: SUCCESS → Step 7 | MINOR → auto-fix | MAJOR → re-brainstorm.
 
 ### Step 7: Writing Plans
 

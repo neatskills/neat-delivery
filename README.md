@@ -55,13 +55,13 @@ Each skill operates with a specific role persona that guides its behavior and ou
 |-------|------|
 | **neat-delivery-analysis** | Software architect who extracts actionable insights from codebases |
 | **neat-delivery-planning** | Product owner who clarifies ambiguous goals and decomposes them into discrete, build-ready features |
-| **neat-delivery-domains** | Domain expert who builds domain knowledge through code investigation and focused analysis |
+| **neat-util-domains** | Domain expert who builds domain knowledge through code investigation and focused analysis |
 | **neat-delivery-build** | Tech lead who orchestrates feature builds from design through verified code |
 | **neat-delivery-gate** | QA engineer who verifies implementation alignment against feature specifications |
 | **neat-delivery-audit** | QA engineer who verifies cross-feature integration, coordination, and consistency |
-| **neat-delivery-adr** | Software architect who documents architectural decisions in MADR format |
-| **neat-delivery-changes** | Project manager who distills complex git history into clear, audience-appropriate change notes |
-| **neat-delivery-debugging** | Software engineer who diagnoses and fixes bugs through ranked hypothesis testing and rapid iteration in isolated worktrees |
+| **neat-util-adr** | Software architect who documents architectural decisions in MADR format |
+| **neat-util-changes** | Project manager who distills complex git history into clear, audience-appropriate change notes |
+| **neat-util-debugging** | Software engineer who diagnoses and fixes bugs through ranked hypothesis testing and rapid iteration in isolated worktrees |
 
 ### Shape Phase (requirements → feature docs)
 
@@ -69,7 +69,7 @@ A human-in-the-loop funnel — each step produces progressively deeper understan
 
 1. **Analysis** (`neat-delivery-analysis`) — Starting point for any product. Analyzes **existing codebases** through multi-level (L0–L6) analysis to extract structured knowledge about architecture, tech stack, patterns, and conventions. Outputs an analysis report and a `specs.md` (product metadata and knowledge base path map). Can analyze reference repositories for learning.
 
-2. **Domains** (`neat-delivery-domains`) — Builds domain knowledge through focused investigations of specific topics within technical or business domains. Investigates topics through code exploration, analysis synthesis, and domain-specific research that merge into living domain knowledge files. Each domain gets one growing file with Overview, Investigations, and Change Log.
+2. **Domains** (`neat-util-domains`) — Builds domain knowledge through focused investigations of specific topics within technical or business domains. Investigates topics through code exploration, analysis synthesis, and domain-specific research that merge into living domain knowledge files. Each domain gets one growing file with Overview, Investigations, and Change Log.
 
 3. **Planning** (`neat-delivery-planning`) — Takes high-level goals or objectives and breaks them down into discrete, build-ready features. Clarifies ambiguous goals via KB-guided questions, synthesizes capabilities from product analysis, cross-checks against architecture, and automatically derives goal statements, dependencies, and risks for each feature. Produces feature files with `state: planned` ready for build.
 
@@ -99,9 +99,9 @@ Independent skills usable at any point — no fixed order, no build dependency. 
 
 **Knowledge** (`neat-knowledge-extract`, `neat-knowledge-ingest`) — Query and build your knowledge base. **Search mode** for fast keyword lookups across metadata. **Ask mode** for interactive research with progressive source loading and synthesis. **Ingest** converts web pages, PDFs, Office documents, ZIP archives, images, and text into structured markdown with automatic analysis and indexing. When installed, neat-delivery automatically manages the project KB (auto-ingests analysis, domains, ADRs, implemented features, and change notes). User must initialize KB once via `/neat-knowledge-ingest <any-file>`. Separate sibling project at [neat-knowledge](https://github.com/neatskills/neat-knowledge).
 
-**Changes** (`neat-delivery-changes`) — Generates curated, audience-appropriate change notes from git history. Categorizes commits using conventional commit prefixes or AI, summarizes in the right tone, outputs markdown and terminal-ready text.
+**Changes** (`neat-util-changes`) — Generates curated, audience-appropriate change notes from git history. Categorizes commits using conventional commit prefixes or AI, summarizes in the right tone, outputs markdown and terminal-ready text.
 
-**ADR** (`neat-delivery-adr`) — Two modes: **Standalone Mode** for conversational ADR creation. **Extraction Mode** for pulling architectural decisions from design specs' "Key Decisions" sections. Generates formal ADRs in MADR format with shared sequential numbering. Can be invoked manually or called by other skills.
+**ADR** (`neat-util-adr`) — Two modes: **Standalone Mode** for conversational ADR creation. **Extraction Mode** for pulling architectural decisions from design specs' "Key Decisions" sections. Generates formal ADRs in MADR format with shared sequential numbering. Can be invoked manually or called by other skills.
 
 ## Standalone Skills
 
@@ -111,11 +111,11 @@ Independent utility skills that can be called standalone or as part of other wor
 | ----- | ------- | ----- |
 | `neat-knowledge-extract` | Search or research knowledge base with progressive loading and synthesis | Standalone for Q&A or called by other skills for KB access |
 | `neat-knowledge-ingest` | Convert web/PDF/Office/ZIP/images to structured markdown with indexing | Standalone for adding content to KB |
-| `neat-delivery-adr` | Create or extract architectural decisions as formal ADRs in MADR format | Standalone conversational mode or extraction mode (can be called by other skills) |
+| `neat-util-adr` | Create or extract architectural decisions as formal ADRs in MADR format | Standalone conversational mode or extraction mode (can be called by other skills) |
 | `neat-delivery-gate` | Independent AI review against feature doc acceptance criteria | Called by `neat-delivery-build` to verify design/plan/code |
 | `neat-delivery-audit` | Final cross-feature verification after multiple features implemented | Run after 2+ features with relationships to verify integration, coordination, consistency |
-| `neat-delivery-changes` | Generate audience-appropriate change notes from git commit history | Standalone for release notes, changelogs |
-| `neat-delivery-debugging` | AI-powered debugging with ranked hypotheses, worktree isolation, and mandatory user alignment before code changes | Standalone for any bug, error, test failure, or unexpected behavior |
+| `neat-util-changes` | Generate audience-appropriate change notes from git commit history | Standalone for release notes, changelogs |
+| `neat-util-debugging` | AI-powered debugging with ranked hypotheses, worktree isolation, and mandatory user alignment before code changes | Standalone for any bug, error, test failure, or unexpected behavior |
 
 ## Install / Uninstall
 

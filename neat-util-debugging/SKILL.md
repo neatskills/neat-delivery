@@ -1,6 +1,8 @@
 ---
-name: neat-delivery-debugging
+name: neat-util-debugging
 description: Use when encountering any bug, error, or unexpected behavior - leverages AI rapid iteration when root cause is uncertain, direct fixes when obvious
+neatskills:
+  self_contained: true
 ---
 
 # AI-Powered Debugging with Rapid Iteration

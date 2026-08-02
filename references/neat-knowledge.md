@@ -71,8 +71,8 @@ cat <kb-path>/.index/index.json | grep -c '"file_path"'
 | Skill | Trigger | Path | Category | Notes |
 |-------|---------|------|----------|-------|
 | **neat-delivery-analysis** | After saving analysis + specs | `analysis-<product>.md` | analysis | Detects KB, writes path to specs.md |
-| **neat-delivery-domains** | After domain investigation | `domain-knowledge-{NN}-{name}.md` | domains | Reads KB path from specs.md |
-| **neat-delivery-adr** | After ADR creation | `docs/specs/<product>/adrs/` (directory) | adrs | |
+| **neat-util-domains** | After domain investigation | `domain-knowledge-{NN}-{name}.md` | domains | Reads KB path from specs.md |
+| **neat-util-adr** | After ADR creation | `docs/specs/<product>/adrs/` (directory) | adrs | |
 | **neat-delivery-build** | Feature `state: implemented` | `feature-{goal}-{nn}-{slug}.md` | features | Only implemented features ingested |
 
 ### Standard Workflow
