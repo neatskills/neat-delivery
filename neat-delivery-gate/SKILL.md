@@ -1,196 +1,141 @@
 ---
 name: neat-delivery-gate
-description: Use when verifying implementation alignment against feature specifications - independent AI review checks design specs, plans, or code against feature doc acceptance criteria - requires existing feature docs from planning
+description: Use when verifying Feature contracts at delivery boundaries — called by neat-delivery-planning when a boundary:feature leaf completes to verify produced artifacts match their declared contract intent
 ---
 
-# Spec Gate
+# Feature Contract Gate
 
-**Role:** You are a QA engineer who verifies implementation alignment against feature specifications using independent AI review.
-
-**Usage:**
-
-```bash
-neat-delivery-gate <product>  # Auto-detects mode based on artifacts
-neat-delivery-gate            # Prompts for product if ambiguous
-```
-
-**Requires:**
-
-- Feature doc with Acceptance Criteria in `docs/specs/<product>/features/` (state: `planned` or `implemented`)
-- **Design mode:** Design spec + task list must exist
-- **Execute mode:** Blast area file + git diff with changes must exist
-
-## Overview
-
-Independent AI review that validates design specs, plans, or code against feature doc acceptance criteria. Runs in design mode (after brainstorming) or execute mode (after implementation).
-
-## Risk Assessment
-
-**Build-invoked gates:** Risk assessment determines if the gate runs. Medium/high-risk features get verified; low-risk features skip gates with logged reasoning.
-
-**Standalone invocation:** Always runs the gate regardless of risk level.
+**Role:** You are a QA coordinator verifying Feature delivery contracts at boundaries. Called by neat-delivery-planning at Feature boundaries (Step 8) — not a standalone session tool.
 
 ## When to Use
 
-- After brainstorming — verify design + tasks
-- After implementation — verify code
-- Standalone — independent review
+Invoked by neat-delivery-planning when a leaf with `boundary: feature` completes. Receives the Feature's `produces` and `consumes` fields from the planning manifest and verifies them.
+
+**Not for standalone invocation** — this skill has no user-facing entry point. It is called mid-execution by the planning coordinator.
 
 ## Quick Reference
 
 | Step | What |
 |------|------|
-| 1 | Select feature, extract acceptance criteria |
-| 2 | Detect mode (design or execute) |
-| 3 | Read artifacts (design: spec + tasks; execute: blast area + diff) |
-| 4 | Run Independent Review (subagent) |
-| 5 | Log results to feature-{goal}-{nn}-{slug}-gates.md |
-
-## Modes
-
-| Mode | Verifies |
-|------|----------|
-| `design` | Brainstorming spec + tasks |
-| `execute` | Blast area + git diff |
-
-## Setup
-
-1. Locate specs.md ([procedure](../references/specs-location.md)), check KB
-2. Output path ([rules](../references/output-conventions.md))
-3. Select feature, extract criteria
-4. Detect mode automatically:
-   - Blast area file exists + git diff shows changes → `execute`
-   - Feature state=planned, no implementation → `design`
-   - Ambiguous → ask user to clarify
-5. Read artifacts (YOU must read, not just locate):
-   - design mode: Read spec + tasks with Read tool
-   - execute mode: Read blast area + run `git diff` for full changes
+| 1 | Receive Feature contract (produces/consumes from manifest) |
+| 2 | Parse produces entries: extract file path + intent description |
+| 3 | Structural check — verify each produces artifact exists and is non-empty |
+| 4 | Structural check — verify each consumes artifact exists |
+| 5 | Semantic check — spawn Haiku subagent per produces artifact with intent + content |
+| 6 | Output PASS/FAIL verdict block to coordinator |
 
 ## Process
 
-```mermaid
-graph TD
-    A[Extract criteria] --> B{Mode?}
-    B -->|design| C[Read spec/tasks]
-    B -->|execute| D[Read blast/diff]
-    C --> E[Independent Review]
-    D --> E
-    E --> F[Parse results]
-    F --> G[Validate evidence format]
-    G --> H{Verdict?}
-    H -->|All SATISFIED| I[PASS]
-    H -->|Some PARTIAL| J[PASS WITH WARNINGS]
-    H -->|Any NOT ADDRESSED| K[FAIL]
-    I --> L[Append log]
-    J --> L
-    K --> L
+### Step 1: Receive Feature Contract
+
+The calling coordinator provides the Feature's contract fields from the planning manifest:
+
+- `produces` — list of entries, each declaring what this Feature produced (path + intent description)
+- `consumes` — list of entries, each declaring what this Feature needed as input (paths only)
+
+Example contract:
+```
+produces:
+- neat-delivery-gate/SKILL.md — redesigned gate that accepts Feature contracts, runs structural and semantic checks, outputs PASS/FAIL per artifact
+consumes:
+- neat-delivery-planning/SKILL.md
+- neat-delivery-planning/references/manifest-format.md
 ```
 
-## Independent Review
+### Step 2: Parse Produces Entries
 
-Output "🔍 Independent Review (spawning subagent)".
+Each produces entry combines file path and intent description, separated by ` — ` (space–em dash–space).
 
-Spawn subagent (Agent tool, `subagent_type: "general-purpose"`, `model: "haiku"`).
+Parse each entry into:
+- `path` — the file to read (everything before ` — `)
+- `intent` — what the artifact should contain (everything after ` — `)
 
-**Retry procedure:** Retry once on failure. Retry means same model, same prompt, fresh subagent spawn. Do not modify prompt or model. Both fail → FAIL.
+If an entry cannot be parsed (no ` — ` separator found), mark it as a parse error: FAIL with note "could not parse path/intent from entry: {entry}". Continue to remaining entries.
+
+### Step 3: Structural Check — Produces
+
+For each produces artifact:
+
+1. Read the file at `path` using the Read tool
+2. File does not exist → FAIL (structural): "file not found: {path}"
+3. File is empty → FAIL (structural): "file is empty: {path}"
+4. File exists and non-empty → PASS (structural)
+
+Do not proceed to semantic check (Step 5) for any artifact that fails structural.
+
+### Step 4: Structural Check — Consumes
+
+For each consumes artifact:
+
+1. Read the file at the declared path
+2. File does not exist → FAIL (structural): "consumed artifact missing: {path}"
+3. File exists → PASS
+
+Note: content is not evaluated — consumes artifacts were verified by prior Feature gates. Existence check only.
+
+### Step 5: Semantic Check — Produces
+
+For each produces artifact that passed structural check:
+
+Spawn a subagent (Agent tool, `subagent_type: "general-purpose"`, `model: "haiku"`).
 
 **Prompt:**
+```
+Verify that this artifact satisfies its delivery contract intent.
 
-```text
-Verify implementation against acceptance criteria.
+Intent (what this artifact was declared to produce):
+{intent}
 
-Feature: [name]
-Mode: [design | execute]
+Artifact content:
+{full file content}
 
-Acceptance Criteria:
-[numbered list of criteria]
+Evaluate whether the artifact content satisfies the stated intent.
 
-Artifact to Review:
-[design mode: design spec + task list]
-[execute mode: blast area summary + git diff]
-
-For each criterion, determine:
-- SATISFIED: Clearly implemented with evidence
-- PARTIAL: Incomplete or partially addressed
-- NOT ADDRESSED: Missing or only mentioned
-
-Return markdown table:
-| Criterion | Status | Evidence | Notes |
-|-----------|--------|----------|-------|
-| [criterion text] | SATISFIED/PARTIAL/NOT ADDRESSED | [file:line or section reference] | [brief explanation] |
-
-Evidence MUST use file:line or file:line-line format.
-Examples:
-✓ auth.js:45-67
-✓ README.md:12
-✗ "implemented in auth.js"
-✗ "handled by authentication"
+Return:
+- Verdict: SATISFIED or NOT SATISFIED
+- Evidence: cite specific content present that satisfies the intent (if SATISFIED), or describe the specific gap (if NOT SATISFIED). Be concrete — name sections, field names, or missing elements.
 ```
 
-**Parse:** SATISFIED→PASS, PARTIAL→WARN, NOT ADDRESSED→FAIL
+**Retry:** Retry once on malformed output (missing Verdict line or missing Evidence). Both fail → NOT SATISFIED with note "subagent returned malformed output twice".
 
-**Validation:** Verify all SATISFIED entries have file:line evidence format. Missing format = auto-downgrade to PARTIAL.
+**Model note:** Haiku is sufficient — this is mechanical matching of content against an explicit intent description.
 
-**Malformed output:** If subagent returns malformed output or missing table, treat all criteria as FAIL and note parsing failure in verdict.
+### Step 6: Output Verdict Block
 
-**Performance optimization:** Uses Haiku model for fast, cost-effective review.
+Assemble and return the verdict block to the calling coordinator. Do not write to any file — planning owns the execution log.
 
-IMPORTANT: Do NOT use Sonnet/Opus for this task. Haiku is sufficient because:
-
-1. Criteria are explicit (clear yes/no)
-2. Artifacts are concrete (code/specs)
-3. Task is mechanical (matching criteria to evidence)
-4. Volume matters (gates run frequently)
-
-Using stronger models wastes resources without improving accuracy.
-
-## Gate Log Format
-
-Append to `docs/specs/<product>/features/feature-{goal}-{nn}-{slug}-gates.md`:
-
-```markdown
----
-
-## Gate: [YYYY-MM-DD HH:MM] | [name] | [design/execute] | [PASS/PASS WITH WARNINGS/FAIL]
-
-### Independent Review
-
-| Criterion | Status | Evidence | Notes |
-| [text] | PASS/WARN/FAIL | [location] | [notes] |
-
-**Summary:** [X] criteria reviewed, [Y] PASS, [Z] WARN, [A] FAIL
-
-### Verdict
-
-**[PASS | PASS WITH WARNINGS | FAIL]**
-- PASS: All SATISFIED
-- PASS WITH WARNINGS: Some PARTIAL, no NOT ADDRESSED
-- FAIL: Any NOT ADDRESSED
-
-[List blockers if FAIL, improvements needed if WARNINGS]
-
----
 ```
+## Feature Gate: {feature-name} | {date}
+
+### Structural Checks
+
+| Artifact | Type | Result | Note |
+|----------|------|--------|------|
+| {path} | produces | PASS/FAIL | {note if FAIL, blank if PASS} |
+| {path} | consumes | PASS/FAIL | {note if FAIL, blank if PASS} |
+
+### Semantic Checks (produces only)
+
+| Artifact | Verdict | Evidence |
+|----------|---------|----------|
+| {path} | SATISFIED/NOT SATISFIED | {evidence or gap description} |
+
+### Overall: PASS / FAIL
+
+{If FAIL: list each failing artifact with its specific failure reason}
+```
+
+**Verdict logic:**
+- PASS: all produces artifacts pass structural + semantic; all consumes artifacts pass structural
+- FAIL: any artifact fails structural, OR any produces artifact is NOT SATISFIED
 
 ## Common Mistakes
 
 | Mistake | Fix |
 |---------|-----|
-| PASS without evidence | Cite exact file:line locations |
-| Inferring coverage | Proximity ≠ implementation, must see actual code |
-| Ambiguous coverage | Unclear = FAIL |
-| Not reading artifacts | YOU must read artifacts before spawning subagent. Passing file paths to subagent = FAIL |
-| WARN as FAIL | WARNs inform, FAILs block |
-| Overwriting log | Append only |
-| Silent retry skip | Retry once, then FAIL |
-| Generic evidence | "Tests exist" → "test/auth.test.ts:45-67" |
-| Using Sonnet/Opus | Use Haiku only, task is mechanical |
-| Skipping validation | Verify file:line format in all SATISFIED entries |
-
-## KB Registration
-
-Register per [standard format](../references/output-conventions.md): `- Gate Logs: docs/specs/<product>/features/`
-
-## Output
-
-`docs/specs/<product>/features/feature-{goal}-{nn}-{slug}-gates.md`
+| Writing gate results to a log file | Do not write to any file — return verdict block to coordinator only |
+| Evaluating consumes artifact content | Existence check only — content was verified by prior Feature gates |
+| Skipping semantic check when structural passes | Both checks required for produces artifacts |
+| Running one subagent for all artifacts | Spawn one subagent per artifact — context bleed reduces accuracy |
+| Inferring SATISFIED from file existence | Semantic check must evaluate content against intent — existence alone is not SATISFIED |
+| Treating parse error as a warning | Parse error = FAIL for that artifact — cannot verify what cannot be parsed |
