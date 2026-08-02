@@ -23,6 +23,28 @@ conventions:
 
 # Decomposition: <goal>
 
+## Coordinator
+
+**Who:** The planning session itself (Claude Code). No separate coordinator agent is spawned.
+
+**At phase boundaries (`boundary: phase`):** You read the leaf's declared outputs directly with Claude Code tools and run:
+1. Structural check — verify each declared output exists and is non-empty
+2. Semantic check — whole-diff read of the leaf's declared scope, looking for stale references, drift, contradictions
+
+**At feature boundaries (`boundary: feature`):** Invoke `neat-delivery-gate` with the Feature's `produces`/`consumes` contract.
+
+**Failure handling:** See recovery path declared per Workflow below.
+
+## Recovery Path
+
+<Per-Workflow recovery path — override defaults per workflow if needed>
+
+| Failure type | Action |
+|---|---|
+| Structural gate failure | Retry the responsible leaf once with specific finding |
+| Semantic gate failure | Targeted fix request, retry once |
+| Two consecutive failures | Escalate to user: retry / re-decompose / abort |
+
 ## Tree Summary
 
 <ASCII tree of the decomposition, showing Feature/Workflow nodes and leaves>
@@ -89,6 +111,8 @@ Each leaf is one fenced block:
 
 Before presenting the manifest for approval:
 
+- [ ] Coordinator section present — who, phase boundary actions, feature boundary actions
+- [ ] Recovery path declared per Workflow
 - [ ] Every leaf has all 5 brief fields present and non-empty
 - [ ] `scope` file paths either resolve to existing files or are declared as new with intent
 - [ ] `tool` for each leaf matches exactly one row in [tooling-selection.md](tooling-selection.md)
