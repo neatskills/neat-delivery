@@ -1,140 +1,90 @@
 ---
 name: neat-util-adr
-description: Use when creating or extracting architectural decisions - standalone conversational mode or extraction from design specs - generates MADR format ADRs
+description: Use when creating architectural decision records (ADRs) - conversational mode, generates MADR format
 neatskills:
   self_contained: true
 ---
 
-# ADR Management
+# ADR Creation
 
 **Role:** You are a software architect who documents architectural decisions in MADR format.
 
-**Usage:**
+**Usage:** `neat-util-adr`
 
-- Standalone: `neat-util-adr`
-- Extraction: `neat-util-adr <design-spec-path> <feature-doc-path> <mode>`
+## Setup
 
-## Overview
+Ask: "Where should I save this ADR?" — user provides a path (e.g. `docs/adrs/`).
 
-- **Modes:** Standalone (conversational) or Extraction (from "Key Decisions")
-- **Architecture:** Shared utilities. Standalone in main, extraction spawns parallel sub-agents
-- **Output:** MADR format in `docs/specs/<product>/adrs/`, shared numbering
+Resolve to absolute path: run `git rev-parse --show-toplevel` and join with the user's path. If not a git repo, resolve relative to CWD.
 
-## When to Use
+Assign ADR number: scan the target directory for files matching `adr-NNN-*.md` → find highest N → next number = N+1, zero-padded to 3 digits. If the directory doesn't exist or contains no matching files, start at `001`. Do not create the directory yet — defer to write time.
 
-| Mode | Use Cases |
-|------|-----------|
-| Standalone | Document without specs, record past decisions, explore trade-offs |
-| Extraction | neat-delivery-build integration, backfill from specs, design review |
+## Conversation
 
-## Quick Reference
+Ask one question at a time. Wait for the response before asking the next. If at any point the user wants to stop ("never mind", "cancel", "stop", etc.), acknowledge and exit — no file written.
 
-### Mode Detection
+Collect these 6 items in order:
 
-| Arguments | Mode | Workflow |
-|-----------|------|----------|
-| None | Standalone | Converse → Generate → Review → Save |
-| 2-3 args | Extraction | Parse → Filter → Confirm → Extract → Save |
+1. What decision are you documenting?
+2. What problem or context prompted it?
+3. What alternatives were considered?
+4. Why this option over the others?
+5. What are the consequences — positive, negative, risks?
+6. Is this decision already in effect (Accepted) or still being proposed (Proposed)?
 
-### Standalone Steps
+After each answer: if the response is too thin to write from (missing key details, one word, obviously incomplete), ask one targeted follow-up before moving on. Do not batch multiple follow-ups at once.
 
-| Step | What |
-|------|------|
-| 1 | Setup: paths, specs.md |
-| 2 | Context: query KB |
-| 3 | Converse: ask questions |
-| 4 | Generate: assign #, format MADR |
-| 5 | Review: present, edit |
-| 6 | Save: write, update |
+## Generate & Review
 
-### Extraction Steps
+Once all 6 items are collected, generate the MADR using the template below. Present the full draft and ask:
 
-| Step | What |
-|------|------|
-| 1 | Setup: mode, paths |
-| 2 | Parse: extract Key Decisions |
-| 3 | Filter: check significance |
-| 4 | Confirm: present, approve |
-| 5 | Spawn: parallel (1 per) |
-| 6 | Extract: check, ask, generate |
-| 7 | Save: collect, update |
+> "Does this look right? (yes / edit / cancel)"
 
-## Setup & Mode Detection
+- **yes** → proceed to File Write
+- **edit** → ask "What would you like to change?", apply the change, loop back to review
+- **cancel** → stop, no file written
 
-**Detect:** No args → Standalone | 2+ args → Extraction
+## MADR Template
 
-**Setup:** Locate specs.md ([standard procedure](../references/specs-location.md)), extract product. Path: `<repo-root>/docs/specs/<product>/adrs/`.
+```markdown
+# {title}
 
-## Shared Utilities
+**Status:** {Accepted|Proposed} | **Date:** {YYYY-MM-DD}
 
-[Shared utilities](references/utilities.md)
+## Context
+{problem that prompted the decision}
 
-## Standalone Mode
+## Decision
+{what was decided}
 
-### Phase 0: Context
+## Alternatives
+{alternatives considered}
 
-Ask topic. Query KB per [knowledge query pattern](../references/output-access.md): "What decisions, components, constraints, risks for [topic]?" Load relevant context.
+## Rationale
+{why this option over the others}
 
-### Phase 1: Conversation
+## Consequences
+**Positive:** {list}
+**Negative:** {list}
+**Risks:** {list}
+```
 
-Ask: "What decision?" "What problem?" Check: decision, context, alternatives, rationale, consequences. Prompt if missing. Suggest alternatives, identify conflicts. See [examples](references/examples.md).
+- `{YYYY-MM-DD}`: today's date
+- `{Accepted|Proposed}`: from question 6
 
-### Phase 2: Generation
+## Filename
 
-Assign date (`YYYYMMDD`), filename `adr-{YYYYMMDD}-{slug}.md`. Status: "Accepted"/"Proposed". Format per [template](references/template.md).
+`adr-{NNN}-{slug}.md`
 
-### Phase 3: Review
+- `{NNN}`: zero-padded 3-digit number from Setup (e.g. `001`, `012`)
+- `{slug}`: title lowercased → spaces to hyphens → remove all non-alphanumeric chars except hyphens → truncate to 50 chars (slug portion only, not including the `adr-NNN-` prefix)
 
-Present for approval (yes/edit/no). Edit: ask → update → loop. No: cancel.
+**Examples:**
+- "API Versioning Strategy" → `adr-003-api-versioning-strategy.md`
+- "Adopt PostgreSQL for Primary Storage" → `adr-007-adopt-postgresql-for-primary-storage.md`
 
-### Phase 4: Save
+## File Write
 
-Write file. Update index.md (sort by date), specs.md. Auto-ingest per [auto KB pattern](../references/neat-knowledge.md): `neat-knowledge-ingest file <adr-path> --category adrs`.
-
-**Errors:** Can't create dir → exit | Write fails → no updates | Corrupt index → backup + fresh
-
-## Extraction Mode
-
-Extract from `## Key Decisions` (H3 subsections). Input: `neat-util-adr <design-spec-path> <feature-doc-path> <mode>`. May yield zero ADRs (valid).
-
-### Step 1: Parse & Filter
-
-Parse H3 → extract number, title, content. Filter ADR-worthy (multi-component, hard to reverse, trade-offs, non-functionals). Skip local/trivial. Confirm: "Detected {N}: Significant ({X}), Uncertain ({Y}), Skipped ({Z}). Generate {X}?" → yes/no/add/remove. None = valid.
-
-### Step 2: Assign Numbers
-
-Use today's date (`YYYYMMDD`). All ADRs share date (slugs differentiate). Extract feature from `feature-<nn>-<slug>.md`.
-
-### Step 3: Spawn Sub-Agents
-
-**Dispatch:** Extract, generate MADR, save, return metadata. Inputs: title, content, date-number, paths, names. Steps: (1) Check completeness → ask if 2+ missing or 1 + <100 words (2) Filename: `adr-{date-number}-{slug}.md` (3) Generate per [template](references/template.md) (4) Write (5) Return metadata.
-
-Spawn ALL (`Agent`, `subagent_type: "general-purpose"`). Collect.
-
-### Step 4: Collect & Save
-
-Receive metadata. Update index.md, specs.md. Auto-ingest per [auto KB pattern](../references/neat-knowledge.md): `neat-knowledge-ingest directory docs/specs/<product>/adrs/ --category adrs`. Benefit: ~30 tokens/ADR vs 800-1,200.
-
-### Error Handling
-
-| Error | Message |
-|-------|---------|
-| Spec not found | "Design spec not found at {path}" |
-| No Key Decisions | "No 'Key Decisions' section found" |
-| User rejects | "Canceled. No files created." |
-| Sub-agent failure | "Generated {N} of {M}. Failed: {title}: {error}" |
-
-### Success
-
-| Outcome | Message |
-|---------|---------|
-| With ADRs | "SUCCESS: Extraction triggered: Analyzed {N} decisions, filtered to {M} significant<br>SUCCESS: Generated {M} ADRs: docs/specs/{product}/adrs/adr-{YYYYMMDD}-*.md<br>SUCCESS: Index and specs.md updated<br>SUCCESS: Indexed in project KB (if available)" |
-| No ADRs | "SUCCESS: Extraction triggered: Analyzed {N} decisions, found 0 architecturally significant<br>INFO: No ADRs generated. All decisions were implementation-specific or trivial." |
-
-## Output
-
-ADRs saved to `docs/specs/<product>/adrs/` per [output conventions](../references/output-conventions.md). Updated in specs.md and KB.
-
-## Common Mistakes
-
-[Common mistakes](references/common-mistakes.md)
+1. Create the directory if it doesn't exist. If creation fails, report the error and stop — do not attempt to write the file.
+2. Write `adr-{NNN}-{slug}.md` to the directory.
+3. Print the full path to the written file.
