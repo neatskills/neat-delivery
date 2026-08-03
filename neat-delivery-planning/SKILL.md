@@ -236,11 +236,11 @@ Both layers required — structural alone is not sufficient:
 
 **Feature boundary** — after all phases of a Feature complete:
 
-Invoke `neat-delivery-gate` against Feature contracts (`produces` / `consumes`).
+Invoke `neat-util-gate` against Feature contracts (`produces` / `consumes`).
 
 **Cross-feature** — after 2+ Features with dependencies or overlapping scope:
 
-Invoke `neat-delivery-audit`.
+Invoke `neat-util-audit`.
 
 ---
 

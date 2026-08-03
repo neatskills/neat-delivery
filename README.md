@@ -53,12 +53,12 @@ Each skill operates with a specific role persona that guides its behavior and ou
 
 | Skill | Role |
 |-------|------|
-| **neat-delivery-analysis** | Software architect who extracts actionable insights from codebases |
+| **neat-delivery-analysing** | Software architect who extracts actionable insights from codebases |
 | **neat-delivery-planning** | Product owner who clarifies ambiguous goals and decomposes them into discrete, build-ready features |
 | **neat-util-domains** | Domain expert who builds domain knowledge through code investigation and focused analysis |
-| **neat-delivery-build** | Tech lead who orchestrates feature builds from design through verified code |
-| **neat-delivery-gate** | QA engineer who verifies implementation alignment against feature specifications |
-| **neat-delivery-audit** | QA engineer who verifies cross-feature integration, coordination, and consistency |
+| **neat-delivery-building** | Tech lead who orchestrates feature builds from design through verified code |
+| **neat-util-gate** | QA engineer who verifies implementation alignment against feature specifications |
+| **neat-util-audit** | QA engineer who verifies cross-feature integration, coordination, and consistency |
 | **neat-util-adr** | Software architect who documents architectural decisions in MADR format |
 | **neat-util-changes** | Project manager who distills complex git history into clear, audience-appropriate change notes |
 | **neat-util-debugging** | Software engineer who diagnoses and fixes bugs through ranked hypothesis testing and rapid iteration in isolated worktrees |
@@ -67,7 +67,7 @@ Each skill operates with a specific role persona that guides its behavior and ou
 
 A human-in-the-loop funnel — each step produces progressively deeper understanding, and you review and steer at every step. No automated gates here; the protection comes from the sequential flow itself, where weak output from one step is naturally surfaced by the next.
 
-1. **Analysis** (`neat-delivery-analysis`) — Starting point for any product. Analyzes **existing codebases** through multi-level (L0–L6) analysis to extract structured knowledge about architecture, tech stack, patterns, and conventions. Outputs an analysis report and a `specs.md` (product metadata and knowledge base path map). Can analyze reference repositories for learning.
+1. **Analysis** (`neat-delivery-analysing`) — Starting point for any product. Analyzes **existing codebases** through multi-level (L0–L6) analysis to extract structured knowledge about architecture, tech stack, patterns, and conventions. Outputs an analysis report and a `specs.md` (product metadata and knowledge base path map). Can analyze reference repositories for learning.
 
 2. **Domains** (`neat-util-domains`) — Builds domain knowledge through focused investigations of specific topics within technical or business domains. Investigates topics through code exploration, analysis synthesis, and domain-specific research that merge into living domain knowledge files. Each domain gets one growing file with Overview, Investigations, and Change Log.
 
@@ -77,7 +77,7 @@ A human-in-the-loop funnel — each step produces progressively deeper understan
 
 This is where spec gates kick in. The feature doc from planning, enriched with acceptance criteria during design, becomes the contract, and every transition is verified against it — preventing drift between intent and execution.
 
-**Build** (`neat-delivery-build`) — Orchestrates end-to-end feature implementation from design through verified code with risk-based gate verification. Requires existing feature docs from planning. Queries the knowledge base to enrich brainstorming with architectural patterns and domain insights.
+**Build** (`neat-delivery-building`) — Orchestrates end-to-end feature implementation from design through verified code with risk-based gate verification. Requires existing feature docs from planning. Queries the knowledge base to enrich brainstorming with architectural patterns and domain insights.
 
 - **Readiness check** → evaluates doc quality (components, risks, goal), discovers blast area files
 - **Brainstorming** → queries KB for patterns and domain knowledge, reads code in blast area, produces design spec AND derives acceptance criteria from chosen design approach
@@ -91,7 +91,7 @@ This is where spec gates kick in. The feature doc from planning, enriched with a
 
 Gates use independent AI review (Haiku-powered) for fast, cost-effective verification against acceptance criteria. Risk assessment prevents unnecessary gates for simple features while ensuring thorough verification of complex or critical changes.
 
-**Audit** (`neat-delivery-audit`) — Final cross-feature verification after multiple features are implemented. Checks dependency integration, blast area coordination, implementation gaps, and pattern consistency across features. Should be run after gates complete for individual features.
+**Audit** (`neat-util-audit`) — Final cross-feature verification after multiple features are implemented. Checks dependency integration, blast area coordination, implementation gaps, and pattern consistency across features. Should be run after gates complete for individual features.
 
 ### Context Phase
 
@@ -112,8 +112,8 @@ Independent utility skills that can be called standalone or as part of other wor
 | `neat-knowledge-extract` | Search or research knowledge base with progressive loading and synthesis | Standalone for Q&A or called by other skills for KB access |
 | `neat-knowledge-ingest` | Convert web/PDF/Office/ZIP/images to structured markdown with indexing | Standalone for adding content to KB |
 | `neat-util-adr` | Create or extract architectural decisions as formal ADRs in MADR format | Standalone conversational mode or extraction mode (can be called by other skills) |
-| `neat-delivery-gate` | Independent AI review against feature doc acceptance criteria | Called by `neat-delivery-build` to verify design/plan/code |
-| `neat-delivery-audit` | Final cross-feature verification after multiple features implemented | Run after 2+ features with relationships to verify integration, coordination, consistency |
+| `neat-util-gate` | Independent AI review against feature doc acceptance criteria | Called by `neat-delivery-building` to verify design/plan/code |
+| `neat-util-audit` | Final cross-feature verification after multiple features implemented | Run after 2+ features with relationships to verify integration, coordination, consistency |
 | `neat-util-changes` | Generate audience-appropriate change notes from git commit history | Standalone for release notes, changelogs |
 | `neat-util-debugging` | AI-powered debugging with ranked hypotheses, worktree isolation, and mandatory user alignment before code changes | Standalone for any bug, error, test failure, or unexpected behavior |
 

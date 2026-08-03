@@ -1,5 +1,5 @@
 ---
-name: neat-delivery-gate
+name: neat-util-gate
 description: Use when verifying Feature contracts at delivery boundaries — called by neat-delivery-planning when a boundary:feature leaf completes to verify produced artifacts match their declared contract intent
 ---
 
@@ -36,7 +36,7 @@ The calling coordinator provides the Feature's contract fields from the planning
 Example contract:
 ```
 produces:
-- neat-delivery-gate/SKILL.md — redesigned gate that accepts Feature contracts, runs structural and semantic checks, outputs PASS/FAIL per artifact
+- neat-util-gate/SKILL.md — redesigned gate that accepts Feature contracts, runs structural and semantic checks, outputs PASS/FAIL per artifact
 consumes:
 - neat-delivery-planning/SKILL.md
 - neat-delivery-planning/references/manifest-format.md

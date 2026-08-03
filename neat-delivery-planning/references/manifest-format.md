@@ -31,7 +31,7 @@ conventions:
 1. Structural check — verify each declared output exists and is non-empty
 2. Semantic check — whole-diff read of the leaf's declared scope, looking for stale references, drift, contradictions
 
-**At feature boundaries (`boundary: feature`):** Invoke `neat-delivery-gate` with the Feature's `produces`/`consumes` contract.
+**At feature boundaries (`boundary: feature`):** Invoke `neat-util-gate` with the Feature's `produces`/`consumes` contract.
 
 **Failure handling:** See recovery path declared per Workflow below.
 

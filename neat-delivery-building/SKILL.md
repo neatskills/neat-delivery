@@ -1,5 +1,5 @@
 ---
-name: neat-delivery-build
+name: neat-delivery-building
 description: Superseded by neat-delivery-planning, which handles decomposition and execution. This skill is no longer invoked.
 ---
 
@@ -91,7 +91,7 @@ Per [algorithm](references/dependency-analysis.md): Count tasks, build graph, id
 
 ### Step 9: Risk Assessment + Gate — Design + Plan
 
-Analyze complexity per [algorithm](references/risk-assessment.md#design-phase-assessment). Gate runs → ensure artifacts, invoke `neat-delivery-gate <product>` (auto-detects design).
+Analyze complexity per [algorithm](references/risk-assessment.md#design-phase-assessment). Gate runs → ensure artifacts, invoke `neat-util-gate <product>` (auto-detects design).
 
 ### Step 10: Spawn Agents
 
@@ -118,7 +118,7 @@ Wait for agents. Per completion:
 
 ### Step 12: Risk Assessment + Gate — Execute
 
-Analyze per [algorithm](references/risk-assessment.md#execute-phase-assessment). Gate → ensure artifacts, invoke `neat-delivery-gate <product>` (auto-detects execute).
+Analyze per [algorithm](references/risk-assessment.md#execute-phase-assessment). Gate → ensure artifacts, invoke `neat-util-gate <product>` (auto-detects execute).
 
 ### Step 13: Update Doc (CRITICAL - BLOCKING)
 
@@ -132,7 +132,7 @@ MUST complete before next spawn.
 
 ### Step 14: Audit Prompt
 
-2+ implemented AND (`depends_on` OR overlaps) → prompt "Run audit? Y/n". Y → invoke `neat-delivery-audit`.
+2+ implemented AND (`depends_on` OR overlaps) → prompt "Run audit? Y/n". Y → invoke `neat-util-audit`.
 
 ### Step 15: Completion
 
@@ -140,7 +140,7 @@ MUST complete before next spawn.
 
 ## Gate Handling
 
-Gates run if medium/high risk. Low-risk → skip, log. Issues → manually invoke `neat-delivery-gate <product>`.
+Gates run if medium/high risk. Low-risk → skip, log. Issues → manually invoke `neat-util-gate <product>`.
 
 **Failure:** "Fix plan | Fix design | Accept | Abort". Max 3. Wrong criteria → surface, update if approved, re-run.
 
@@ -158,5 +158,5 @@ docs/superpowers/
 docs/specs/<product>/
   adrs/adr-YYYYMMDD-<decision>.md, index.md
   features/feature-{goal}-{nn}-{slug}.md              # state: implemented, Status
-  features/feature-{goal}-{nn}-{slug}-gates.md        # by neat-delivery-gate
+  features/feature-{goal}-{nn}-{slug}-gates.md        # by neat-util-gate
 ```

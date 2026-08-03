@@ -1,6 +1,6 @@
 ---
 name: neat-util-domains
-description: Use when building domain knowledge through focused investigations - investigates specific topics within technical or business domains that merge into living domain knowledge files - requires existing neat-delivery-analysis output
+description: Use when building domain knowledge through focused investigations - investigates specific topics within technical or business domains that merge into living domain knowledge files - requires existing neat-delivery-analysing output
 neatskills:
   self_contained: true
 ---
@@ -17,7 +17,7 @@ Select domain → build foundation → investigate topics → merge into one fil
 
 **Output:** `domain-knowledge-{NN}-{name}.md` with Overview, Investigations, Change Log.
 
-**Not for:** Q&A (`neat-knowledge-extract`) or analysis (`neat-delivery-analysis`)
+**Not for:** Q&A (`neat-knowledge-extract`) or analysis (`neat-delivery-analysing`)
 
 ## When to Use
 
@@ -126,7 +126,7 @@ After the investigation completes, proceed to Step 9 (Merge).
      - Log: "✓ Indexed domain knowledge in project KB"
    - Otherwise: Skip auto-ingest
 3. Offer PDF (`neat-util-pdf`)
-4. Recommend `neat-delivery-audit`
+4. Recommend `neat-util-audit`
 
 ## Output Format
 
