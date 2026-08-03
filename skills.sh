@@ -9,7 +9,7 @@ if [ "$mode" != "install" ] && [ "$mode" != "uninstall" ]; then
 fi
 
 SKILL_PREFIX="neat-"
-root="$(cd "$(dirname "$0")/.." && pwd)"
+root="$(cd "$(dirname "$0")" && pwd)"
 dst="$HOME/.claude/skills"
 
 if [ "$mode" = "install" ]; then
