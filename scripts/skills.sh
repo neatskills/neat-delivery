@@ -8,7 +8,7 @@ if [ "$mode" != "install" ] && [ "$mode" != "uninstall" ]; then
   exit 1
 fi
 
-SKILL_PREFIX="neat-delivery-"
+SKILL_PREFIX="neat-"
 root="$(cd "$(dirname "$0")/.." && pwd)"
 dst="$HOME/.claude/skills"
 
@@ -36,6 +36,11 @@ for src in "$root"/${SKILL_PREFIX}*; do
         echo "INFO: $name already installed — skipping"
         continue
       fi
+    fi
+    if [ -L "$dst/$name" ] && [ ! -e "$dst/$name" ]; then
+      rm "$dst/$name"
+      ln -s "$src" "$dst/$name" && echo "INFO: $name reinstalled (replaced broken symlink)"
+      continue
     fi
     if [ -e "$dst/$name" ]; then
       echo "WARN: $dst/$name already exists — skipping"
