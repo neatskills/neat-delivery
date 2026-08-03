@@ -1,23 +1,15 @@
 ---
 name: neat-delivery-analysing
-description: Use when analyzing an existing codebase - extracts structured knowledge through layered analysis (L0-L6) before planning and building
+description: Use when analyzing an existing or newly designed codebase before planning or building.
 ---
 
 # Analysis
 
-**Role:** You are a Software Architect who extracts actionable insights from codebases — every finding answers "so what?"
+**Role:** You are a Software Architect who extracts actionable insights from an unfamiliar codebase — producing a structured analysis file (L0–L6).
 
 ## Overview
 
 Layered knowledge extraction (L0-L6) for unfamiliar codebases.
-
-## When to Use
-
-- Starting delivery after a discovery-designed greenfield project (no codebase yet)
-- Onboarding to existing codebases
-- Pre-refactoring/migration
-- Building understanding before changes
-- Reference analysis
 
 ## Modes
 
@@ -30,23 +22,73 @@ Layered knowledge extraction (L0-L6) for unfamiliar codebases.
 
 Platform and Reference can combine with Brownfield (analyze the platform, then analyze a product within it).
 
-## Setup
+---
 
-1. **Detect mode:**
-   - No existing codebase → **Greenfield**
-   - Workspace/tooling/CI focus (monorepo, shared infra) → **Platform**
-   - External or third-party codebase → **Reference** (analyze first, then return to target)
-   - Existing product codebase → **Brownfield**
-2. **Greenfield:** Ask user to share discovery handover. Skip L1–L6. Go to [Greenfield Analysis](#greenfield-analysis).
-3. **Platform:** Check `docs/specs/analysis-platform.md`. **Missing:** Prompt. **Declines:** Warn. **Agrees:** Analyze, list, select.
-4. **Reference:** Ask purpose, analyze FIRST.
-5. Derive name (slugify, max 20)
-6. Check source → empty? Minimal
-7. Check existing, warn
+## Phase 1: Setup
+
+**Configuration:**
+- Workspace: `<repo-root>/neat-delivery/` (fixed)
+- Output: `analysis-<product-name>.md` | `analysis-platform.md` | `analysis-<ref-name>.md`
+
+**Step 1 — Detect mode:**
+
+```text
+No existing codebase          → Greenfield
+Workspace/tooling/CI focus    → Platform
+External or third-party repo  → Reference (analyze FIRST, then return to target)
+Existing product codebase     → Brownfield
+```
+
+**Step 2 — Handle mode:**
+- **Greenfield:** Ask for discovery handover → follow [Greenfield Path](#greenfield-path). Skip Steps 3–5.
+- **Platform:** Check `docs/specs/analysis-platform.md`. Missing → prompt. Declines → warn and rationalize. Agrees → analyze, list, select.
+- **Reference:** Ask purpose, analyze FIRST.
+
+**Step 3 — Derive name:** Slugify project/product name, max 20 chars.
+
+**Step 4 — Check source:** Empty repo → proceed with Minimal mode (L0-L6 placeholders, `empty: true`).
+
+**Step 5 — Check existing:** Warn if analysis file already exists.
+
+### Greenfield Path
+
+**Ask:** "Please share the discovery handover from neat-discovery — paste the contents or provide the file path."
+
+If not provided, stop: "A discovery handover is required for greenfield analysis. Complete /neat-discovery-designing first, then share the handover here."
+
+The handover is the only artifact read — no assumptions about file location.
+
+1. Parse shared handover content
+2. Extract: project name, Architecture Pattern, Technology Decisions, Requirements (MVP Core + Deferred), Open Risks
+3. Derive product name (slugify project name, max 20 chars)
+
+No analysis file is generated. Suggest `neat-delivery-planning`. Done.
+
+### Platform Rationalization
+
+Use when user pushes back on platform analysis.
+
+| Pressure / Thought | Response |
+|--------------------|----------|
+| "User knows" | May not — platform has custom config |
+| "Quickly" / "Waste time" | Prevents rework downstream |
+| "Just [product]" / "Just focus" | Can't without platform context |
+| "Standard" | Custom exists |
+| "Docs done" | Docs ≠ L0-L6 |
+| "Add later" | Needs now |
+| "Don't" | Explain value, offer to proceed |
+
+### Checkpoint
+
+```text
+[1] yes — proceed to Phase 2
+[2] no — flag an issue (e.g. "wrong mode detected")
+[3] discuss — present the issue with alternatives; iterate until resolved or rejected.
+```
 
 ---
 
-## Layered Analysis
+## Phase 2: Analysis
 
 Sequential L1→L6, L0 last. Do NOT skip. **Stop if fails.**
 
@@ -88,18 +130,9 @@ Test coverage, tech debt, dead code, security, dependencies. Flag anti-patterns.
 
 Purpose, architecture (1 sentence each), stats, top findings, risks, component map.
 
----
+### Platform Layer Focus
 
-## Platform Analysis
-
-For platforms (multiple products, shared infrastructure).
-
-### Scope
-
-**Analyze:** Workspace, tooling, orchestration, platform services, CI/CD, patterns
-**Exclude:** Product code
-
-### Layer Focus
+*Platform mode only.* Scope: workspace, tooling, orchestration, platform services, CI/CD, patterns. Exclude product code.
 
 | Layer | Focus |
 |-------|-------|
@@ -112,88 +145,35 @@ For platforms (multiple products, shared infrastructure).
 
 **Output:** `analysis-platform.md` at `<repo-root>/docs/specs/`
 
-### Pushback
-
-| Pressure | Response |
-|----------|----------|
-| "Quickly" | "Prevents rework." |
-| "Just [product]" | "Captures deploy, integration." |
-| "Standard" | "Custom exists." |
-| "Waste time" | "Downstream needs it." |
-
 ---
 
-## Greenfield Analysis
-
-For projects with no existing codebase — designed but not yet built.
-
-### Input
-
-**Ask:** "Please share the discovery handover from neat-discovery — paste the contents or provide the file path."
-
-If not provided, stop: "A discovery handover is required for greenfield analysis. Complete /neat-discovery-designing first, then share the handover here."
-
-The handover is the only artifact read — no assumptions about file location.
-
-### Process
-
-1. Parse shared handover content
-2. Extract: project name, Architecture Pattern, Technology Decisions, Requirements (MVP Core + Deferred), Open Risks
-3. Derive product name (slugify project name, max 20 chars)
-
-No analysis file is generated.
-
----
-
-## Empty Handling
-
-Minimal analysis (L0-L6 placeholders, `empty: true`).
-
----
-
-## Output Format
+## Phase 3: Output
 
 **Filename:** `analysis-<product-name>.md`, `analysis-<ref-name>.md`, `analysis-platform.md`
 **Location:** [output-conventions.md](../references/output-conventions.md)
 **Frontmatter:** `type`, `analyzed`, `source`/`purpose` (refs only)
 **Sections:** `## L[n]: Title` → Findings → Content → Implications
 
-## Process
+### Checkpoint
 
-TodoWrite: ask structure/refs → (platform: check → prompt → list/select) → (refs: first) → derive name → check empty → L1-L6 → L0 → save.
+```text
+[1] yes — save file
+[2] no — flag an issue
+[3] discuss — present the issue with alternatives; iterate until resolved or rejected.
+```
+
+Save the file. Suggest next skill:
+- **Greenfield:** `neat-delivery-planning`
+- **Brownfield/Platform/Reference:** `neat-util-domains`
+
+Done.
+
+---
 
 ## Common Mistakes
 
 | Mistake | Fix |
 |---------|-----|
-| File tree dump | Conventions, max 30 lines |
-| Happy path only | Add auth, error, edge cases |
-| Facts only | Add implications |
-| L0 first | Write last |
+| Facts only | Add implications — every finding answers "so what?" |
 | Prose | Tables, Mermaid |
-| Refs after target | FIRST |
-| Missing frontmatter | Add type/analyzed/source/purpose |
-| Empty: fail/skip | Minimal + `empty: true` |
-| L1–L6 on greenfield | Detect mode first; greenfield skips analysis entirely |
 | Greenfield without handover | Handover is required — no handover means can't run greenfield mode |
-
-## Platform Rationalization
-
-| Thought | Reality |
-|---------|---------|
-| "User knows" | May not |
-| "Just focus" | Can't without |
-| "Quickly" | Prevents rework |
-| "Standard" | Custom exists |
-| "Waste time" | Skipping worse |
-| "Docs done" | Docs ≠ L0-L6 |
-| "Add later" | Needs now |
-| "Don't" | Explain, offer |
-
-**Prompt with reasoning.**
-
-## After Saving
-
-1. **Suggest (mode-dependent):**
-   - **Greenfield:** `neat-delivery-planning`
-   - **Brownfield/Platform/Reference:** `neat-util-domains`
